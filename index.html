@@ -6,6 +6,8 @@
     <title>HS Electricals - Magazzino Garage</title>
     <!-- Caricamento Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Libreria Scanner Codice a Barre / QR Reale tramite Fotocamera -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <!-- Font Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Configurazione Tailwind personalizzata con stile ispirato al brand HS Electricals (Charcoal & Cyan) -->
@@ -70,13 +72,13 @@
 
                 <!-- Pulsanti Azioni Rapide Header -->
                 <div class="flex items-center gap-2">
-                    <button onclick="openScannerModal()" class="p-2.5 rounded-xl bg-[#00c4d8]/15 hover:bg-[#00c4d8]/25 active:scale-95 text-[#00c4d8] border border-[#00c4d8]/30 transition flex items-center justify-center shadow-[0_0_10px_rgba(0,196,216,0.1)]" title="Scanner Codice a Barre">
+                    <button onclick="openScannerModal()" class="p-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 active:scale-95 text-amber-400 border border-amber-500/30 transition flex items-center justify-center shadow-[0_0_10px_rgba(245,158,11,0.12)]" title="Scanner Codice a Barre">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
                         </svg>
                     </button>
 
-                    <button onclick="openShoppingModal()" class="relative p-2.5 rounded-xl bg-[#1e2229] hover:bg-[#383e4a] active:scale-95 text-[#00c4d8] border border-[#383e4a] transition" title="Lista da Riordinare">
+                    <button onclick="openShoppingModal()" class="relative p-2.5 rounded-xl bg-slate-100/10 hover:bg-slate-100/20 active:scale-95 text-slate-100 border border-slate-100/25 transition" title="Lista da Riordinare">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                         </svg>
@@ -129,8 +131,8 @@
         <!-- PULSANTE FISSO IN BASSO -->
         <div class="fixed bottom-0 left-0 right-0 z-40 pointer-events-none">
             <div class="max-w-lg mx-auto px-4 pb-5 pt-6 bg-gradient-to-t from-[#1e2229] via-[#2b3038]/95 to-transparent flex justify-center">
-                <button type="button" onclick="openItemModal()" class="pointer-events-auto w-full py-4 px-6 rounded-2xl bg-[#00c4d8] hover:bg-[#22d6e8] active:scale-[0.98] text-slate-950 font-extrabold text-base shadow-[0_0_20px_rgba(0,196,216,0.3)] flex items-center justify-center gap-2 transition cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <button type="button" onclick="openItemModal()" class="pointer-events-auto w-full py-4 px-6 rounded-2xl bg-[#2c6e7a] hover:bg-[#357f8c] active:scale-[0.98] text-slate-100 font-bold text-base shadow-lg border border-[#3d8b99]/40 flex items-center justify-center gap-2 transition cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                     </svg>
                     <span>Aggiungi Articolo</span>
@@ -173,8 +175,16 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Codice / Barcode</label>
-                        <input type="text" id="item-code" placeholder="Es. 14000" 
-                            class="w-full bg-[#1e2229] text-white rounded-xl px-3.5 py-3 border border-[#383e4a] focus:border-[#00c4d8] focus:outline-none text-sm font-mono">
+                        <div class="relative flex items-center">
+                            <input type="text" id="item-code" placeholder="Es. 14000" 
+                                class="w-full bg-[#1e2229] text-white rounded-xl pl-3.5 pr-10 py-3 border border-[#383e4a] focus:border-[#00c4d8] focus:outline-none text-sm font-mono">
+                            <button type="button" onclick="openScannerModal('form')" class="absolute right-2 p-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-400 border border-amber-500/30 transition" title="Scansiona con fotocamera">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Marca / Serie</label>
@@ -185,8 +195,8 @@
                 </div>
 
                 <div class="space-y-3">
-                    <input type="text" id="item-brand-custom" placeholder="Scrivi Marca e Serie personalizzata..." 
-                        class="hidden w-full bg-[#1e2229] text-white rounded-xl px-4 py-2.5 border border-[#00c4d8]/60 focus:outline-none text-sm">
+                    <input type="text" id="item-brand-custom" placeholder="Scrivi qui il nome della nuova marca..." 
+                        class="hidden w-full bg-[#1e2229] text-white rounded-xl px-4 py-2.5 border border-[#00c4d8]/60 focus:border-[#00c4d8] focus:outline-none text-sm">
                     
                     <div>
                         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Colore / Dettagli (Opzionale)</label>
@@ -316,35 +326,40 @@
                 <input type="text" id="new-category-name" placeholder="Nome nuova categoria..." required class="flex-1 bg-[#1e2229] text-white rounded-xl px-4 py-3 border border-[#383e4a] focus:border-[#00c4d8] focus:outline-none text-sm">
                 <button type="submit" class="px-5 py-3 rounded-xl bg-[#00c4d8] hover:bg-[#22d6e8] text-slate-950 font-extrabold text-sm transition">Aggiungi</button>
             </form>
-            <div class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Categorie Esistenti</div>
-            <div id="category-list-container" class="flex-1 overflow-y-auto space-y-2 pr-1 mb-2"></div>
+            <div id="category-manager-list" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
         </div>
     </div>
 
-    <!-- MODALE SCANNER -->
-    <div id="scanner-modal" class="hidden fixed inset-0 z-50 bg-[#1e2229]/95 backdrop-blur-md flex flex-col justify-between p-4">
+    <!-- MODALE SCANNER FOTOCAMERA REALE -->
+    <div id="scanner-modal" class="hidden fixed inset-0 z-50 bg-[#1e2229]/95 backdrop-blur-md flex flex-col justify-between p-4 overflow-y-auto">
         <div class="flex items-center justify-between pb-3 border-b border-[#383e4a]">
-            <h2 class="text-base font-bold text-white">Scanner Codice / Articolo</h2>
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                <h2 class="text-base font-bold text-white">Scanner Fotocamera</h2>
+            </div>
             <button type="button" onclick="closeScannerModal()" class="p-2 rounded-xl bg-[#2b3038] text-slate-400 hover:text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                 </svg>
             </button>
         </div>
-        <div class="flex-1 flex flex-col items-center justify-center space-y-4 max-w-sm mx-auto w-full text-center">
-            <div class="w-full bg-[#2b3038] border-2 border-dashed border-[#00c4d8]/50 rounded-2xl p-6 relative overflow-hidden flex flex-col items-center justify-center min-h-[200px]">
-                <div class="absolute inset-0 bg-[#00c4d8]/5 flex items-center justify-center">
-                    <div class="w-3/4 h-0.5 bg-[#00c4d8] animate-pulse shadow-[0_0_15px_#00c4d8]"></div>
+        <div class="flex-1 flex flex-col items-center justify-center space-y-4 max-w-sm mx-auto w-full text-center my-3">
+            <!-- Riquadro Video Fotocamera Posteriore -->
+            <div class="w-full bg-[#1e2229] border-2 border-amber-500/50 rounded-2xl overflow-hidden relative shadow-xl">
+                <div id="qr-reader" class="w-full min-h-[240px] bg-black flex items-center justify-center"></div>
+                <div id="scanner-status-msg" class="p-2.5 text-xs text-slate-300 bg-[#2b3038]/90 border-t border-[#383e4a]">
+                    Avvio fotocamera posteriore...
                 </div>
-                <p class="text-sm font-bold text-white mb-1">Inquadra o inserisci codice</p>
-                <p class="text-xs text-slate-400">Se il codice esiste incrementa la scorta, altrimenti crea l'articolo.</p>
             </div>
-            <div class="w-full space-y-2">
-                <input type="text" id="scanner-code-input" placeholder="Codice articolo..." onkeydown="if(event.key==='Enter') processScannedCode(this.value)" class="w-full bg-[#1e2229] text-white text-center rounded-xl px-4 py-3.5 border border-[#383e4a] focus:border-[#00c4d8] focus:outline-none font-mono text-base">
-                <button type="button" onclick="processScannedCode(document.getElementById('scanner-code-input').value)" class="w-full py-3.5 px-4 rounded-xl bg-[#00c4d8] hover:bg-[#22d6e8] text-slate-950 font-extrabold text-sm transition">Cerca o Aggiungi</button>
+
+            <!-- Fallback Inserimento Manuale -->
+            <div class="w-full space-y-2 pt-1">
+                <p class="text-[11px] text-slate-400">Oppure digita / usa lettore esterno:</p>
+                <input type="text" id="scanner-code-input" placeholder="Codice articolo o EAN..." onkeydown="if(event.key==='Enter') processScannedCode(this.value)" class="w-full bg-[#1e2229] text-white text-center rounded-xl px-4 py-3 border border-[#383e4a] focus:border-amber-500 focus:outline-none font-mono text-sm">
+                <button type="button" onclick="processScannedCode(document.getElementById('scanner-code-input').value)" class="w-full py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm transition">Conferma Codice</button>
             </div>
         </div>
-        <div class="pt-3 text-center text-xs text-slate-500">Compatibile con pistole barcode USB/Bluetooth.</div>
+        <div class="pt-2 text-center text-[11px] text-slate-500">Inquadra il codice a barre (EAN, Code128, QR) ben illuminato.</div>
     </div>
 
     <!-- MODALE SPESA -->
@@ -418,6 +433,7 @@
 
         let state = { items: [], categories: [...DEFAULT_CATEGORIES], brands: [...DEFAULT_BRANDS], selectedCategory: 'Tutti', selectedBrand: 'Tutte le marche', searchQuery: '', onlyLowStock: false };
         let resetConfirmTimeout = null, toastTimeout = null, categoryHoldTimer = null;
+        let html5QrCodeInstance = null, scannerTargetMode = 'main', isProcessingScan = false;
 
         document.addEventListener('DOMContentLoaded', () => { loadFromStorage(); renderAll(); });
 
@@ -426,146 +442,199 @@
                 const raw = localStorage.getItem(STORAGE_KEY);
                 if (raw) {
                     const parsed = JSON.parse(raw);
-                    if (Array.isArray(parsed.items)) state.items = parsed.items;
-                    if (Array.isArray(parsed.categories)) state.categories = parsed.categories;
-                    if (Array.isArray(parsed.brands)) state.brands = parsed.brands;
+                    state.items = Array.isArray(parsed.items) ? parsed.items : JSON.parse(JSON.stringify(INITIAL_INVENTORY));
+                    state.categories = Array.isArray(parsed.categories) && parsed.categories.length > 0 ? parsed.categories : [...DEFAULT_CATEGORIES];
+                    state.brands = Array.isArray(parsed.brands) && parsed.brands.length > 0 ? parsed.brands : [...DEFAULT_BRANDS];
                 } else {
                     state.items = JSON.parse(JSON.stringify(INITIAL_INVENTORY));
+                    state.categories = [...DEFAULT_CATEGORIES];
+                    state.brands = [...DEFAULT_BRANDS];
                     saveToStorage();
                 }
-            } catch (err) { state.items = JSON.parse(JSON.stringify(INITIAL_INVENTORY)); }
+            } catch (e) {
+                state.items = JSON.parse(JSON.stringify(INITIAL_INVENTORY));
+                state.categories = [...DEFAULT_CATEGORIES];
+                state.brands = [...DEFAULT_BRANDS];
+            }
         }
 
         function saveToStorage() {
-            try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ items: state.items, categories: state.categories, brands: state.brands })); } catch (e) {}
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    items: state.items,
+                    categories: state.categories,
+                    brands: state.brands
+                }));
+            } catch (e) {
+                showToast("Errore salvataggio locale");
+            }
         }
 
-        function renderAll() { renderCategoryPills(); renderBrandPills(); renderInventory(); updateHeaderStats(); }
-
-        function updateHeaderStats() {
-            const totalPieces = state.items.reduce((sum, item) => sum + Number(item.qty || 0), 0);
-            const totalArticles = state.items.length;
-            const lowStockItems = state.items.filter(item => item.qty <= (item.minQty ?? 2));
-            document.getElementById('stats-subtitle').textContent = `${totalArticles} articoli • ${totalPieces} pz`;
-            const badge = document.getElementById('low-stock-badge');
-            if (lowStockItems.length > 0) { badge.textContent = lowStockItems.length; badge.classList.remove('hidden'); }
-            else { badge.classList.add('hidden'); }
+        function renderAll() {
+            renderCategoryPills();
+            renderBrandPills();
+            renderInventory();
+            updateStatsAndBadges();
         }
 
         function renderCategoryPills() {
             const container = document.getElementById('category-filters');
-            const allCats = ['Tutti', ...state.categories];
-            container.innerHTML = allCats.map(cat => {
-                const isSelected = state.selectedCategory === cat;
-                const active = isSelected ? "bg-[#00c4d8] text-slate-950 shadow-md shadow-[#00c4d8]/20 font-extrabold" : "bg-[#1e2229] text-slate-300 hover:bg-[#383e4a] border border-[#383e4a]";
-                const hold = cat !== 'Tutti' ? `onmousedown="startCategoryHold(event, '${escapeHtml(cat)}')" ontouchstart="startCategoryHold(event, '${escapeHtml(cat)}')" onmouseup="cancelCategoryHold()" ontouchend="cancelCategoryHold()"` : '';
-                return `<div onclick="selectCategory('${escapeHtml(cat)}')" ${hold} class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition cursor-pointer select-none flex items-center gap-1.5 ${active}"><span>${escapeHtml(cat)}</span></div>`;
-            }).join('') + `<button onclick="openCategoryManagerModal()" class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#1e2229] hover:bg-[#383e4a] text-[#00c4d8] border border-dashed border-[#00c4d8]/40 transition"><span>+ Altra Categoria</span></button>`;
+            const cats = ['Tutti', ...state.categories];
+            container.innerHTML = cats.map(c => {
+                const active = state.selectedCategory === c;
+                return `<button type="button" onclick="selectCategory('${escapeHtml(c).replace(/'/g, "\\'")}')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${active ? 'bg-[#00c4d8] text-slate-950 shadow' : 'bg-[#1e2229] text-slate-300 border border-[#383e4a] hover:border-slate-500'}">${escapeHtml(c)}</button>`;
+            }).join('') + `<button type="button" onclick="openCategoryManagerModal()" class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-[#1e2229] text-[#00c4d8] border border-[#00c4d8]/30 hover:bg-[#383e4a] transition">+ Gestisci</button>`;
         }
 
-        function startCategoryHold(e, catName) {
-            categoryHoldTimer = setTimeout(() => { if (navigator.vibrate) navigator.vibrate(40); openCategoryReorderPrompt(catName); }, 600);
-        }
-        function cancelCategoryHold() { if (categoryHoldTimer) { clearTimeout(categoryHoldTimer); categoryHoldTimer = null; } }
-
-        function openCategoryReorderPrompt(catName) {
-            const idx = state.categories.indexOf(catName);
-            if (idx === -1) return;
-            const modal = document.createElement('div');
-            modal.id = 'category-reorder-popup';
-            modal.className = 'fixed inset-0 z-50 bg-[#1e2229]/90 backdrop-blur-sm flex items-center justify-center p-4 animate-slide-up';
-            modal.innerHTML = `
-                <div class="bg-[#2b3038] border border-[#00c4d8]/30 w-full max-w-xs rounded-3xl p-5 shadow-2xl text-center space-y-4">
-                    <h3 class="text-base font-bold text-white mb-1">Sposta "${escapeHtml(catName)}"</h3>
-                    <div class="grid grid-cols-2 gap-2.5 pt-2">
-                        <button onclick="reorderCategoryPopup('${escapeHtml(catName)}', -1)" class="py-3 px-4 rounded-xl bg-[#1e2229] text-[#00c4d8] font-bold text-xs border border-[#383e4a]">◀ Sinistra</button>
-                        <button onclick="reorderCategoryPopup('${escapeHtml(catName)}', 1)" class="py-3 px-4 rounded-xl bg-[#1e2229] text-[#00c4d8] font-bold text-xs border border-[#383e4a]">Destra ▶</button>
-                    </div>
-                    <button onclick="closeCategoryReorderPopup()" class="w-full py-2 text-slate-400 text-xs">Annulla</button>
-                </div>`;
-            document.body.appendChild(modal);
-        }
-        function closeCategoryReorderPopup() { const p = document.getElementById('category-reorder-popup'); if (p) p.remove(); }
-        function reorderCategoryPopup(catName, direction) {
-            const idx = state.categories.indexOf(catName), ni = idx + direction;
-            if (ni < 0 || ni >= state.categories.length) { closeCategoryReorderPopup(); return; }
-            const temp = state.categories[idx]; state.categories[idx] = state.categories[ni]; state.categories[ni] = temp;
-            saveToStorage(); renderCategoryPills(); closeCategoryReorderPopup(); showToast(`Spostato "${catName}"`);
+        function selectCategory(cat) {
+            state.selectedCategory = cat;
+            state.selectedBrand = 'Tutte le marche';
+            renderCategoryPills();
+            renderBrandPills();
+            renderInventory();
+            updateStatsAndBadges();
         }
 
         function renderBrandPills() {
             const container = document.getElementById('brand-filters');
-            const used = new Set(); state.items.forEach(i => { if (i.brand) used.add(i.brand); });
-            const sorted = Array.from(used).sort((a, b) => a === 'Da assegnare' ? 1 : b === 'Da assegnare' ? -1 : a.localeCompare(b));
-            if (state.selectedBrand !== 'Tutte le marche' && !used.has(state.selectedBrand)) state.selectedBrand = 'Tutte le marche';
-            container.innerHTML = ['Tutte le marche', ...sorted].map(b => {
-                const sel = state.selectedBrand === b;
-                const cls = sel ? "bg-[#00c4d8] text-slate-950 shadow-md shadow-[#00c4d8]/20 font-extrabold" : "bg-[#1e2229] text-slate-400 hover:text-slate-200 border border-[#383e4a]";
-                return `<button onclick="selectBrand('${escapeHtml(b)}')" class="shrink-0 px-3 py-1 rounded-lg text-[11px] font-bold transition cursor-pointer select-none ${cls}">${escapeHtml(b === 'Tutte le marche' ? '🏷️ Tutte le marche' : b)}</button>`;
+            const relevantItems = state.selectedCategory === 'Tutti'
+                ? state.items
+                : state.items.filter(i => i.category === state.selectedCategory);
+            const availableBrands = [...new Set(relevantItems.map(i => i.brand).filter(Boolean))];
+            const pills = ['Tutte le marche', ...availableBrands];
+            container.innerHTML = pills.map(b => {
+                const active = state.selectedBrand === b;
+                return `<button type="button" onclick="selectBrand('${escapeHtml(b).replace(/'/g, "\\'")}')" class="px-3 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition ${active ? 'bg-[#383e4a] text-[#00c4d8] border border-[#00c4d8]/50' : 'bg-[#1e2229]/80 text-slate-400 border border-[#383e4a]/70 hover:text-slate-200'}">${escapeHtml(b)}</button>`;
             }).join('');
+        }
+
+        function selectBrand(brand) {
+            state.selectedBrand = brand;
+            renderBrandPills();
+            renderInventory();
+            updateStatsAndBadges();
+        }
+
+        function handleSearch(val) {
+            state.searchQuery = val.trim().toLowerCase();
+            document.getElementById('clear-search-btn').classList.toggle('hidden', !state.searchQuery);
+            renderInventory();
+            updateStatsAndBadges();
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            handleSearch('');
+        }
+
+        function toggleLowStockFilter() {
+            state.onlyLowStock = !state.onlyLowStock;
+            const btn = document.getElementById('toggle-low-stock-btn');
+            if (state.onlyLowStock) {
+                btn.classList.add('border-rose-500/60', 'bg-rose-500/15', 'text-rose-300');
+                btn.classList.remove('border-[#383e4a]', 'bg-[#1e2229]', 'text-slate-300');
+            } else {
+                btn.classList.remove('border-rose-500/60', 'bg-rose-500/15', 'text-rose-300');
+                btn.classList.add('border-[#383e4a]', 'bg-[#1e2229]', 'text-slate-300');
+            }
+            renderInventory();
+            updateStatsAndBadges();
+        }
+
+        function getFilteredItems() {
+            return state.items.filter(item => {
+                if (state.selectedCategory !== 'Tutti' && item.category !== state.selectedCategory) return false;
+                if (state.selectedBrand !== 'Tutte le marche' && item.brand !== state.selectedBrand) return false;
+                if (state.onlyLowStock && item.qty > (item.minQty ?? 2)) return false;
+                if (state.searchQuery) {
+                    const hay = `${item.name} ${item.code || ''} ${item.brand || ''} ${item.note || ''} ${item.category || ''}`.toLowerCase();
+                    if (!hay.includes(state.searchQuery)) return false;
+                }
+                return true;
+            });
         }
 
         function renderInventory() {
-            const listEl = document.getElementById('inventory-list');
-            const q = state.searchQuery.trim().toLowerCase();
-            const filtered = state.items.filter(item => {
-                const ib = item.brand || 'Da assegnare';
-                const mc = state.selectedCategory === 'Tutti' || item.category === state.selectedCategory;
-                const mb = state.selectedBrand === 'Tutte le marche' || ib === state.selectedBrand;
-                const ml = !state.onlyLowStock || item.qty <= (item.minQty ?? 2);
-                const ms = !q || item.name.toLowerCase().includes(q) || ib.toLowerCase().includes(q) || (item.code && item.code.toLowerCase().includes(q)) || (item.note && item.note.toLowerCase().includes(q));
-                return mc && mb && ml && ms;
-            });
+            const list = document.getElementById('inventory-list');
+            const filtered = getFilteredItems();
 
             if (filtered.length === 0) {
-                listEl.innerHTML = `<div class="text-center py-12 px-4 bg-[#1e2229]/60 rounded-2xl border border-[#383e4a] border-dashed"><p class="text-slate-300 font-bold text-base mb-1">Nessun articolo trovato</p><button onclick="resetFilters()" class="mt-2 px-4 py-2 rounded-xl bg-[#1e2229] text-[#00c4d8] text-xs font-bold border border-[#383e4a]">Mostra tutto</button></div>`;
+                list.innerHTML = `<div class="text-center py-12 px-4 bg-[#1e2229]/50 rounded-2xl border border-[#383e4a]"><p class="text-slate-400 text-sm font-semibold">Nessun articolo trovato con questi filtri.</p></div>`;
                 return;
             }
 
-            listEl.innerHTML = filtered.map(item => {
-                const min = item.minQty ?? 2, out = item.qty === 0, low = item.qty > 0 && item.qty <= min;
-                const ib = item.brand || 'Da assegnare', isC = item.category === 'Cavi';
-                let border = "border-[#383e4a] bg-[#1e2229]/90", qtyColor = "text-white", badge = "";
-                if (out) { border = "border-rose-500/50 bg-rose-950/20"; qtyColor = "text-rose-400"; badge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-rose-500/20 text-rose-400">Esaurito</span>`; }
-                else if (low) { border = "border-amber-500/40 bg-[#1e2229]/90"; qtyColor = "text-amber-400"; badge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-amber-500/20 text-amber-300">Scorta bassa</span>`; }
-
-                const photo = item.photo ? `<div onclick="event.stopPropagation(); openPhotoZoom('${item.photo}', '${escapeHtml(item.name).replace(/'/g, "\\'")}')" class="w-12 h-12 rounded-xl bg-[#1e2229] border border-[#383e4a] overflow-hidden shrink-0 cursor-pointer shadow hover:opacity-80"><img src="${item.photo}" class="w-full h-full object-cover"></div>` : '';
+            list.innerHTML = filtered.map(item => {
+                const isLow = item.qty <= (item.minQty ?? 2);
+                const photoHtml = item.photo
+                    ? `<img src="${item.photo}" onclick="openPhotoZoom('${item.id}')" alt="${escapeHtml(item.name)}" class="w-14 h-14 rounded-xl object-cover border border-[#383e4a] shrink-0 cursor-pointer">`
+                    : `<div class="w-14 h-14 rounded-xl bg-[#1e2229] border border-[#383e4a] flex items-center justify-center shrink-0 text-slate-500 text-xs font-bold uppercase">${escapeHtml((item.brand || 'HS').slice(0, 2))}</div>`;
 
                 return `
-                    <div class="rounded-2xl p-3.5 border ${border} shadow-sm flex items-center justify-between gap-3 transition">
-                        ${photo}
-                        <div onclick="openItemModal('${item.id}')" class="flex-1 min-w-0 cursor-pointer py-0.5">
-                            <div class="flex items-center flex-wrap gap-1.5 mb-1.5">
-                                <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-[#2b3038] text-slate-300">${escapeHtml(ib)}</span>
-                                <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-[#2b3038] text-slate-300">${escapeHtml(item.category)}</span>
-                                ${isC ? `<span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-[#00c4d8]/15 text-[#00c4d8]">🌀 Matassa</span>` : ''}
-                                ${item.code ? `<span class="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-[#00c4d8]/15 text-[#00c4d8]">Cod. ${escapeHtml(item.code)}</span>` : ''}
-                                ${badge}
-                            </div>
-                            <h3 class="text-base font-bold text-slate-100 truncate">${escapeHtml(item.name)}</h3>
-                            <p class="text-xs text-slate-400 truncate mt-0.5">${escapeHtml(item.note || 'Tocca per dettagli')}</p>
+                <div class="bg-[#1e2229] border ${isLow ? 'border-rose-500/40' : 'border-[#383e4a]'} rounded-2xl p-3.5 flex items-center gap-3 shadow-sm">
+                    ${photoHtml}
+                    <div class="flex-1 min-w-0 cursor-pointer" onclick="openItemModal('${item.id}')">
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#383e4a] text-[#00c4d8]">${escapeHtml(item.brand || 'Da assegnare')}</span>
+                            ${item.code ? `<span class="text-[10px] font-mono text-slate-400 bg-[#2b3038] px-1.5 py-0.5 rounded">#${escapeHtml(item.code)}</span>` : ''}
+                            ${isLow ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-400">Scorta bassa</span>` : ''}
                         </div>
-                        <div class="flex items-center gap-1.5 shrink-0 bg-[#2b3038] p-1.5 rounded-2xl border border-[#383e4a]">
-                            <button onclick="updateQuantity('${item.id}', ${isC ? -10 : -1})" class="w-11 h-11 rounded-xl bg-[#1e2229] hover:bg-[#383e4a] text-slate-200 font-extrabold text-sm flex items-center justify-center">${isC ? '-10' : '−'}</button>
-                            <div onclick="openItemModal('${item.id}')" class="w-14 text-center cursor-pointer"><span class="text-base font-extrabold ${qtyColor} tabular-nums">${item.qty}</span><span class="block text-[9px] text-slate-400 uppercase font-bold">${isC ? 'metri' : 'pezzi'}</span></div>
-                            <button onclick="updateQuantity('${item.id}', ${isC ? 10 : 1})" class="w-11 h-11 rounded-xl bg-[#00c4d8]/20 hover:bg-[#00c4d8]/30 text-[#00c4d8] font-extrabold text-sm flex items-center justify-center">${isC ? '+10' : '+'}</button>
-                        </div>
-                    </div>`;
+                        <h3 class="text-sm font-bold text-white truncate mt-1">${escapeHtml(item.name)}</h3>
+                        ${item.note ? `<p class="text-[11px] text-slate-400 truncate mt-0.5">${escapeHtml(item.note)}</p>` : ''}
+                    </div>
+                    <div class="flex items-center gap-1.5 bg-[#2b3038] p-1 rounded-xl border border-[#383e4a] shrink-0">
+                        <button type="button" onclick="quickChangeQty('${item.id}', -1)" class="w-8 h-8 rounded-lg bg-[#1e2229] hover:bg-[#383e4a] text-slate-200 font-bold text-base flex items-center justify-center active:scale-90 transition">-</button>
+                        <span class="min-w-[28px] text-center font-extrabold text-sm ${isLow ? 'text-rose-400' : 'text-white'}">${item.qty}</span>
+                        <button type="button" onclick="quickChangeQty('${item.id}', 1)" class="w-8 h-8 rounded-lg bg-[#1e2229] hover:bg-[#383e4a] text-[#00c4d8] font-bold text-base flex items-center justify-center active:scale-90 transition">+</button>
+                    </div>
+                </div>`;
             }).join('');
         }
 
-        function openPhotoZoom(url, title) {
-            document.getElementById('zoomed-photo-img').src = url;
-            document.getElementById('zoomed-photo-title').textContent = title;
-            document.getElementById('photo-zoom-modal').classList.remove('hidden');
+        function quickChangeQty(id, delta) {
+            const idx = state.items.findIndex(i => i.id === id);
+            if (idx === -1) return;
+            state.items[idx].qty = Math.max(0, (state.items[idx].qty || 0) + delta);
+            saveToStorage();
+            renderInventory();
+            updateStatsAndBadges();
         }
-        function closePhotoZoom() { document.getElementById('photo-zoom-modal').classList.add('hidden'); }
+
+        function updateStatsAndBadges() {
+            const filtered = getFilteredItems();
+            const totalPieces = filtered.reduce((acc, i) => acc + (i.qty || 0), 0);
+            document.getElementById('stats-subtitle').textContent = `${filtered.length} articoli • ${totalPieces} pz`;
+
+            const lowCount = state.items.filter(i => i.qty <= (i.minQty ?? 2)).length;
+            const badge = document.getElementById('low-stock-badge');
+            if (lowCount > 0) {
+                badge.textContent = lowCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
 
         function handlePhotoUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = ev => setPhotoData(ev.target.result);
+            reader.onload = ev => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const maxDim = 480;
+                    let w = img.width, h = img.height;
+                    if (w > maxDim || h > maxDim) {
+                        if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+                        else { w = Math.round((w * maxDim) / h); h = maxDim; }
+                    }
+                    canvas.width = w;
+                    canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    setPhotoData(canvas.toDataURL('image/jpeg', 0.75));
+                };
+                img.src = ev.target.result;
+            };
             reader.readAsDataURL(file);
         }
 
@@ -577,51 +646,57 @@
 
         function removePhoto() {
             document.getElementById('item-photo-base64').value = '';
-            document.getElementById('item-photo-preview').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`;
             document.getElementById('item-photo-file').value = '';
+            document.getElementById('item-photo-preview').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>`;
             document.getElementById('remove-photo-btn').classList.add('hidden');
         }
 
-        function updateQuantity(id, delta) {
+        function openPhotoZoom(id) {
             const item = state.items.find(i => i.id === id);
-            if (!item) return;
-            item.qty = Math.max(0, Number(item.qty) + delta);
-            saveToStorage(); renderInventory(); updateHeaderStats();
-            showToast(`${delta > 0 ? '+' : ''}${delta} ${item.name} (${item.qty})`);
+            if (!item || !item.photo) return;
+            document.getElementById('zoomed-photo-img').src = item.photo;
+            document.getElementById('zoomed-photo-title').textContent = `${item.name} (${item.brand || ''})`;
+            document.getElementById('photo-zoom-modal').classList.remove('hidden');
         }
 
-        function handleSearch(val) { state.searchQuery = val; document.getElementById('clear-search-btn').classList.toggle('hidden', !val); renderInventory(); }
-        function clearSearch() { const i = document.getElementById('search-input'); i.value = ''; handleSearch(''); i.focus(); }
-        function selectCategory(cat) { state.selectedCategory = cat; renderCategoryPills(); renderInventory(); }
-        function selectBrand(b) { state.selectedBrand = b; renderBrandPills(); renderInventory(); }
-        function toggleLowStockFilter() { state.onlyLowStock = !state.onlyLowStock; renderInventory(); }
-        function resetFilters() { state.selectedCategory = 'Tutti'; state.selectedBrand = 'Tutte le marche'; state.searchQuery = ''; state.onlyLowStock = false; document.getElementById('search-input').value = ''; renderAll(); }
+        function closePhotoZoom() {
+            document.getElementById('photo-zoom-modal').classList.add('hidden');
+        }
 
-        function openCategoryManagerModal() { renderCategoryManagerList(); document.getElementById('category-manager-modal').classList.remove('hidden'); }
-        function closeCategoryManagerModal() { document.getElementById('category-manager-modal').classList.add('hidden'); }
+        function openCategoryManagerModal() {
+            renderCategoryManagerList();
+            document.getElementById('category-manager-modal').classList.remove('hidden');
+        }
+
+        function closeCategoryManagerModal() {
+            document.getElementById('category-manager-modal').classList.add('hidden');
+        }
+
         function renderCategoryManagerList() {
-            document.getElementById('category-list-container').innerHTML = state.categories.map((cat, idx) => `
+            const list = document.getElementById('category-manager-list');
+            list.innerHTML = state.categories.map(c => `
                 <div class="flex items-center justify-between p-3 rounded-xl bg-[#1e2229] border border-[#383e4a]">
-                    <p class="text-sm font-bold text-white truncate">${escapeHtml(cat)}</p>
-                    <div class="flex items-center gap-1">
-                        <button onclick="moveCategory(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} class="p-2 rounded bg-[#383e4a] text-slate-200 disabled:opacity-30">◀</button>
-                        <button onclick="moveCategory(${idx}, 1)" ${idx === state.categories.length - 1 ? 'disabled' : ''} class="p-2 rounded bg-[#383e4a] text-slate-200 disabled:opacity-30">▶</button>
-                        <button onclick="deleteCategory('${escapeHtml(cat)}')" class="p-2 rounded bg-rose-500/20 text-rose-400 ml-1">✕</button>
-                    </div>
-                </div>`).join('');
+                    <span class="text-sm font-semibold text-white">${escapeHtml(c)}</span>
+                    <button type="button" onclick="deleteCategory('${escapeHtml(c).replace(/'/g, "\\'")}')" class="text-xs font-bold text-rose-400 hover:text-rose-300 px-2.5 py-1 rounded-lg bg-rose-500/10">Elimina</button>
+                </div>
+            `).join('');
         }
-        function moveCategory(i, d) {
-            const ni = i + d; if (ni < 0 || ni >= state.categories.length) return;
-            const t = state.categories[i]; state.categories[i] = state.categories[ni]; state.categories[ni] = t;
-            saveToStorage(); renderCategoryManagerList(); renderCategoryPills(); renderInventory();
-        }
+
         function addNewCategory(e) {
             e.preventDefault();
-            const val = document.getElementById('new-category-name').value.trim();
-            if (!val || state.categories.includes(val)) return;
-            state.categories.push(val); saveToStorage(); document.getElementById('new-category-name').value = '';
-            renderCategoryManagerList(); renderCategoryPills(); showToast("Categoria aggiunta");
+            const input = document.getElementById('new-category-name');
+            const name = input.value.trim();
+            if (!name) return;
+            if (!state.categories.includes(name)) {
+                state.categories.push(name);
+                saveToStorage();
+                renderCategoryManagerList();
+                renderCategoryPills();
+                showToast("Categoria aggiunta");
+            }
+            input.value = '';
         }
+
         function deleteCategory(cat) {
             if (state.items.some(i => i.category === cat)) { showToast("Impossibile eliminare: ci sono articoli"); return; }
             state.categories = state.categories.filter(c => c !== cat);
@@ -629,23 +704,124 @@
             saveToStorage(); renderCategoryManagerList(); renderCategoryPills(); renderInventory(); showToast("Eliminata");
         }
 
-        function openScannerModal() { document.getElementById('scanner-code-input').value = ''; document.getElementById('scanner-modal').classList.remove('hidden'); setTimeout(() => document.getElementById('scanner-code-input').focus(), 150); }
-        function closeScannerModal() { document.getElementById('scanner-modal').classList.add('hidden'); }
-        function processScannedCode(code) {
-            const clean = code.trim(); if (!clean) return;
-            closeScannerModal();
+        function playScanBeep() {
+            try {
+                if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1046.5, ctx.currentTime);
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.14);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.15);
+            } catch (e) {}
+        }
+
+        async function stopCameraScanner() {
+            if (html5QrCodeInstance) {
+                try {
+                    if (html5QrCodeInstance.isScanning) {
+                        await html5QrCodeInstance.stop();
+                    }
+                    html5QrCodeInstance.clear();
+                } catch (err) {
+                    console.warn("Chiusura camera:", err);
+                }
+                html5QrCodeInstance = null;
+            }
+        }
+
+        function openScannerModal(mode = 'main') {
+            scannerTargetMode = mode;
+            isProcessingScan = false;
+            document.getElementById('scanner-code-input').value = '';
+            const statusEl = document.getElementById('scanner-status-msg');
+            statusEl.textContent = 'Richiesta accesso alla fotocamera...';
+            statusEl.className = 'p-2.5 text-xs text-slate-300 bg-[#2b3038]/90 border-t border-[#383e4a]';
+            document.getElementById('scanner-modal').classList.remove('hidden');
+
+            setTimeout(() => {
+                if (typeof Html5Qrcode === 'undefined') {
+                    statusEl.textContent = 'Libreria fotocamera non caricata. Inserisci il codice manualmente.';
+                    statusEl.className = 'p-2.5 text-xs text-amber-400 bg-amber-950/40 border-t border-amber-500/30';
+                    document.getElementById('scanner-code-input').focus();
+                    return;
+                }
+
+                if (!window.isSecureContext && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                    statusEl.textContent = 'Fotocamera bloccata: serve una connessione sicura HTTPS.';
+                    statusEl.className = 'p-2.5 text-xs text-rose-400 bg-rose-950/40 border-t border-rose-500/30';
+                    document.getElementById('scanner-code-input').focus();
+                    return;
+                }
+
+                html5QrCodeInstance = new Html5Qrcode("qr-reader");
+                const config = {
+                    fps: 12,
+                    qrbox: { width: 250, height: 140 },
+                    aspectRatio: 1.333
+                };
+
+                html5QrCodeInstance.start(
+                    { facingMode: "environment" },
+                    config,
+                    (decodedText) => {
+                        if (isProcessingScan) return;
+                        isProcessingScan = true;
+                        playScanBeep();
+                        processScannedCode(decodedText);
+                    },
+                    () => {}
+                ).then(() => {
+                    statusEl.textContent = 'Inquadra il codice a barre nel riquadro';
+                }).catch((err) => {
+                    statusEl.textContent = 'Permesso fotocamera negato o non disponibile. Usa il campo manuale sotto.';
+                    statusEl.className = 'p-2.5 text-xs text-rose-400 bg-rose-950/40 border-t border-rose-500/30';
+                    document.getElementById('scanner-code-input').focus();
+                });
+            }, 150);
+        }
+
+        async function closeScannerModal() {
+            await stopCameraScanner();
+            document.getElementById('scanner-modal').classList.add('hidden');
+        }
+
+        async function processScannedCode(code) {
+            const clean = String(code || '').trim();
+            if (!clean) return;
+            await closeScannerModal();
+
+            if (scannerTargetMode === 'form') {
+                document.getElementById('item-code').value = clean;
+                showToast(`Codice acquisito: ${clean}`);
+                return;
+            }
+
             const existing = state.items.find(i => i.code && i.code.toLowerCase() === clean.toLowerCase());
-            if (existing) { existing.qty++; saveToStorage(); renderInventory(); updateHeaderStats(); showToast(`+1 ${existing.name}`); }
-            else { openItemModal(); document.getElementById('item-code').value = clean; document.getElementById('item-name').focus(); showToast(`Nuovo codice ${clean}`); }
+            if (existing) {
+                openItemModal(existing.id);
+                showToast(`Trovato: ${existing.name} (Scorta: ${existing.qty})`);
+            } else {
+                openItemModal();
+                document.getElementById('item-code').value = clean;
+                document.getElementById('item-name').focus();
+                showToast(`Nuovo codice ${clean}: compila i dettagli`);
+            }
         }
 
         function openItemModal(id = null) {
             const modal = document.getElementById('item-modal'), catSelect = document.getElementById('item-category'), brandSelect = document.getElementById('item-brand-select');
             catSelect.innerHTML = state.categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('') + `<option value="__NEW__">+ Nuova categoria...</option>`;
-            brandSelect.innerHTML = state.brands.map(b => `<option value="${escapeHtml(b)}">${escapeHtml(b)}</option>`).join('') + `<option value="__CUSTOM__">+ Altra marca...</option>`;
+            brandSelect.innerHTML = state.brands.map(b => `<option value="${escapeHtml(b)}">${escapeHtml(b)}</option>`).join('') + `<option value="__CUSTOM__">+ Altra marca (scrivi tu)...</option>`;
             
             document.getElementById('item-new-category').classList.add('hidden');
             document.getElementById('item-brand-custom').classList.add('hidden');
+            document.getElementById('item-brand-custom').value = '';
 
             catSelect.onchange = function() {
                 document.getElementById('item-new-category').classList.toggle('hidden', this.value !== '__NEW__');
@@ -659,7 +835,14 @@
                 document.getElementById('item-id').value = item.id;
                 document.getElementById('item-name').value = item.name;
                 document.getElementById('item-code').value = item.code || '';
-                brandSelect.value = state.brands.includes(item.brand) ? item.brand : 'Da assegnare';
+                if (item.brand && !state.brands.includes(item.brand)) {
+                    brandSelect.value = '__CUSTOM__';
+                    const customInput = document.getElementById('item-brand-custom');
+                    customInput.classList.remove('hidden');
+                    customInput.value = item.brand;
+                } else {
+                    brandSelect.value = item.brand || 'Da assegnare';
+                }
                 document.getElementById('item-note').value = item.note || '';
                 catSelect.value = state.categories.includes(item.category) ? item.category : '__NEW__';
                 if (catSelect.value === '__NEW__') { document.getElementById('item-new-category').classList.remove('hidden'); document.getElementById('item-new-category').value = item.category; }
@@ -688,7 +871,15 @@
         }
 
         function closeItemModal() { document.getElementById('item-modal').classList.add('hidden'); }
-        function handleBrandSelectChange(val) { document.getElementById('item-brand-custom').classList.toggle('hidden', val !== '__CUSTOM__'); }
+        function handleBrandSelectChange(val) {
+            const customInput = document.getElementById('item-brand-custom');
+            const isCustom = val === '__CUSTOM__';
+            customInput.classList.toggle('hidden', !isCustom);
+            if (isCustom) {
+                customInput.value = '';
+                customInput.focus();
+            }
+        }
         function adjustModalQty(d) { const i = document.getElementById('item-qty'); i.value = Math.max(0, parseInt(i.value || '0', 10) + d); }
 
         function saveItem(e) {
