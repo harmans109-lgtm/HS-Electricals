@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HS Electricals - Magazzino Garage</title>
+    <!-- Caricamento Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Configurazione Tailwind personalizzata con stile ispirato al brand HS Electricals (Charcoal & Cyan) -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        charcoal: {
+                            900: '#2b3038',
+                            950: '#1e2229',
+                            base: '#383e4a',
+                        },
+                        hsCyan: {
+                            500: '#00c4d8',
+                            400: '#22d6e8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        button { touch-action: manipulation; }
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-up { animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        body {
+            background: linear-gradient(135deg, #1e2229 0%, #2b3038 100%);
+        }
+    </style>
+</head>
+<body class="text-slate-100 font-sans antialiased selection:bg-[#00c4d8] selection:text-slate-950 min-h-screen">
+
+    <!-- Contenitore Principale Mobile-First ispirato al brand HS Electricals -->
+    <div id="app" class="max-w-lg mx-auto min-h-screen bg-[#2b3038]/95 shadow-2xl border-x border-[#00c4d8]/20 flex flex-col relative pb-28">
+        
+        <!-- HEADER FISSO STILE HS ELECTRICALS -->
+        <header class="sticky top-0 z-30 bg-[#1e2229]/95 backdrop-blur-md border-b border-[#00c4d8]/20 px-4 pt-3.5 pb-3">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-3">
+                    <!-- Logo monogramma corsivo "H" in cyan con box charcoal -->
+                    <div class="w-11 h-11 rounded-2xl bg-[#2b3038] border-2 border-[#00c4d8] flex items-center justify-center shadow-[0_0_15px_rgba(0,196,216,0.3)]">
+                        <svg class="w-7 h-7 text-[#00c4d8]" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+                            <!-- Monogramma corsivo H stilizzato ispirato alla foto -->
+                            <path d="M35 18 C35 35 32 65 34 82 M65 22 C65 40 60 68 62 80 M24 50 Q50 48 76 50 M58 68 C62 76 68 84 72 78" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-base font-black tracking-widest text-white uppercase leading-none">HS Electricals</h1>
+                        <p class="text-[10px] text-[#00c4d8] tracking-[0.2em] uppercase font-bold mt-0.5">We make things shine</p>
+                    </div>
+                </div>
+
+                <!-- Pulsanti Azioni Rapide Header -->
+                <div class="flex items-center gap-2">
+                    <button onclick="openScannerModal()" class="p-2.5 rounded-xl bg-[#00c4d8]/15 hover:bg-[#00c4d8]/25 active:scale-95 text-[#00c4d8] border border-[#00c4d8]/30 transition flex items-center justify-center shadow-[0_0_10px_rgba(0,196,216,0.1)]" title="Scanner Codice a Barre">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                        </svg>
+                    </button>
+
+                    <button onclick="openShoppingModal()" class="relative p-2.5 rounded-xl bg-[#1e2229] hover:bg-[#383e4a] active:scale-95 text-[#00c4d8] border border-[#383e4a] transition" title="Lista da Riordinare">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                        </svg>
+                        <span id="low-stock-badge" class="hidden absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full bg-rose-500 text-white text-[11px] font-bold flex items-center justify-center shadow">0</span>
+                    </button>
+
+                    <button onclick="openBackupModal()" class="p-2.5 rounded-xl bg-[#1e2229] hover:bg-[#383e4a] active:scale-95 text-slate-300 border border-[#383e4a] transition" title="Backup e Impostazioni">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- BARRA DI RICERCA -->
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Cerca articolo, codice o marca..." 
+                    class="w-full bg-[#1e2229] text-white placeholder-slate-400 text-sm rounded-xl pl-10 pr-10 py-3 border border-[#383e4a] focus:outline-none focus:border-[#00c4d8] focus:ring-1 focus:ring-[#00c4d8] transition">
+                <button id="clear-search-btn" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- FILTRI CATEGORIA -->
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pt-3 pb-0.5" id="category-filters"></div>
+
+            <!-- FILTRI MARCA -->
+            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-2 pb-0.5" id="brand-filters"></div>
+        </header>
+
+        <!-- BANNER SCORTE BASSE -->
+        <div class="px-4 pt-3 flex items-center justify-between gap-2">
+            <button id="toggle-low-stock-btn" onclick="toggleLowStockFilter()" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#1e2229] text-slate-300 border border-[#383e4a] transition active:scale-95">
+                <span id="low-stock-dot" class="w-2 h-2 rounded-full bg-rose-500"></span>
+                <span>Solo scorte basse</span>
+            </button>
+            <span id="stats-subtitle" class="text-xs text-[#00c4d8] font-bold">0 articoli • 0 pz</span>
+        </div>
+
+        <!-- LISTA ARTICOLI -->
+        <main id="inventory-list" class="flex-1 px-4 py-3 space-y-3"></main>
+
+        <!-- PULSANTE FISSO IN BASSO -->
+        <div class="fixed bottom-0 left-0 right-0 z-40 pointer-events-none">
+            <div class="max-w-lg mx-auto px-4 pb-5 pt-6 bg-gradient-to-t from-[#1e2229] via-[#2b3038]/95 to-transparent flex justify-center">
+                <button type="button" onclick="openItemModal()" class="pointer-events-auto w-full py-4 px-6 rounded-2xl bg-[#00c4d8] hover:bg-[#22d6e8] active:scale-[0.98] text-slate-950 font-extrabold text-base shadow-[0_0_20px_rgba(0,196,216,0.3)] flex items-center justify-center gap-2 transition cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>Aggiungi Articolo</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 -translate-y-2 transition-all duration-300">
+        <div class="bg-[#1e2229] text-white px-4 py-2.5 rounded-2xl shadow-xl border border-[#00c4d8]/40 flex items-center gap-2.5">
+            <div class="w-2 h-2 rounded-full bg-[#00c4d8] animate-ping"></div>
+            <span id="toast-msg" class="text-xs font-bold">Notifica</span>
+        </div>
+    </div>
+
+    <textarea id="clipboard-helper" class="fixed -top-20 -left-20 opacity-0 w-1 h-1 pointer-events-none"></textarea>
+
+    <!-- MODALE ARTICOLO -->
+    <div id="item-modal" class="hidden fixed inset-0 z-50 bg-[#1e2229]/90 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-[#2b3038] border border-[#00c4d8]/30 w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl animate-slide-up max-h-[92vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-[#383e4a]">
+                <h2 id="modal-title" class="text-lg font-bold text-white">Nuovo Articolo</h2>
+                <button type="button" onclick="closeItemModal()" class="p-2 rounded-xl bg-[#1e2229] text-slate-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+
+            <form id="item-form" onsubmit="saveItem(event)" class="space-y-4">
+                <input type="hidden" id="item-id">
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Nome Articolo</label>
+                    <input type="text" id="item-name" placeholder="Es. Interruttore, Placca 3m..." required 
+                        class="w-full bg-[#1e2229] text-white rounded-xl px-4 py-3 border border-[#383e4a] focus:border-[#00c4d8] focus:outline-none text-sm font-medium">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Codice / Barcode</label>
+                        <input type="text" id="item-code" placeholder="Es. 14000" 
+                            class="w-full bg-[#1e2229] text-white rounded-xl px-3.5 py-3 border border-[#383e4a] focus:border-[#00c4d8] focus:outline-none text-sm font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Marca / Serie</label>
+                        <select id="item-brand-select" onchange="handleBrandSelectChange(this.value)"
+                            class="w-full bg-[#1e2229] text-white rounded-xl px-3 py-3 border border-[#383e4a] focus:border-[#00c4d8] focus:outline-none text-sm">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <input type="text" id="item-brand-custom" placeholder="Scrivi Marca e Serie personalizzata..." 
+                        class="hidden w-full bg-[#1e2229] text-white rounded-xl px-4 py-2.5 border border-[#00c4d8]/60 focus:outline-none text-sm">
+                    
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Colore / Dettagli (Opzionale)</label>
+                        <input type="text" id="item-note" placeholder="Es. Bianco, Antracite..." 
+                            class="w-full bg-[#1e2229] text-white rounded-xl px-3.5 py-2.5 border border-[#383e4a] focus:border-[#00c4d8] focus:outline-none text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Categoria</label>
+                    <select id="item-category" onchange="handleCategorySelectChange(this.value)" 
+                        class="w-full bg-[#1e2229] text-white rounded-xl px-4 py-3 border border-[#383e4a] focus:border-[#00c4d8] focus:outline-none text-sm">
+                    </select>
+                    <input type="text" id="item-new-category" placeholder="Scrivi nome nuova categoria..." 
+                        class="hidden mt-2 w-full bg-[#1e2229] text-white rounded-xl px-4 py-2.5 border border-[#00c4d8]/60 focus:outline-none text-sm">
+                </div>
+
+                <!-- FOTO ARTICOLO -->
+                <div class="space-y-2 p-3.5 bg-[#1e2229]/60 rounded-2xl border border-[#383e4a]">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-[#00c4d8] mb-1">Foto Articolo (Opzionale)</label>
+                    <div class="flex items-center gap-3">
+                        <div id="item-photo-preview" class="w-16 h-16 rounded-xl bg-[#1e2229] border border-[#383e4a] flex items-center justify-center overflow-hidden shrink-0 text-slate-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div class="flex-1 space-y-2">
+                            <input type="file" id="item-photo-file" accept="image/*" onchange="handlePhotoUpload(event)" class="hidden">
+                            <button type="button" onclick="document.getElementById('item-photo-file').click()" class="w-full py-2 px-3 rounded-xl bg-[#1e2229] hover:bg-[#383e4a] text-slate-200 border border-[#383e4a] font-semibold text-xs flex items-center justify-center gap-2 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#00c4d8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span>Carica o scatta foto</span>
+                            </button>
+                            <input type="hidden" id="item-photo-base64">
+                            <button type="button" id="remove-photo-btn" onclick="removePhoto()" class="hidden text-xs text-rose-400 hover:underline font-semibold">Rimuovi foto</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SPECIFICHE CAVI -->
+                <div id="cable-specific-fields" class="hidden space-y-3 p-3.5 bg-[#1e2229]/60 rounded-2xl border border-[#383e4a]">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-[#00c4d8] uppercase tracking-wider">Specifiche Cavo</span>
+                        <span class="text-[11px] text-slate-400">Matassa standard 100m o spezzone</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Sezione (mm²)</label>
+                            <select id="cable-section" class="w-full bg-[#1e2229] text-white rounded-xl px-3 py-2.5 border border-[#383e4a] focus:border-[#00c4d8] focus:outline-none text-sm">
+                                <option value="0.5 mm²">0.5 mm²</option><option value="0.75 mm²">0.75 mm²</option><option value="1.0 mm²">1.0 mm²</option><option value="1.5 mm²">1.5 mm²</option><option value="2.5 mm²">2.5 mm²</option><option value="4.0 mm²">4.0 mm²</option><option value="6.0 mm²">6.0 mm²</option><option value="10 mm²">10 mm²</option><option value="16 mm²">16 mm²</option><option value="25 mm²">25 mm²</option><option value="Altro">Altro / Fror</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Colore / Isolamento</label>
+                            <select id="cable-color" class="w-full bg-[#1e2229] text-white rounded-xl px-3 py-2.5 border border-[#383e4a] focus:border-[#00c4d8] focus:outline-none text-sm">
+                                <option value="Nero (Fase)">Nero (Fase)</option><option value="Marrone (Fase)">Marrone (Fase)</option><option value="Grigio (Fase)">Grigio (Fase)</option><option value="Blu (Neutro)">Blu (Neutro)</option><option value="Celeste">Celeste</option><option value="Giallo/Verde (Terra)">Giallo/Verde (Terra)</option><option value="Rosso">Rosso</option><option value="Bianco">Bianco</option><option value="Viola">Viola</option><option value="Arancione">Arancione</option><option value="Multicolore / Multipolare (FG17)">Multicolore / Multipolare (FG17)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QUANTITA E SCORTA -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Quantità</label>
+                        <div class="flex items-center bg-[#1e2229] rounded-xl border border-[#383e4a] overflow-hidden">
+                            <button type="button" onclick="adjustModalQty(-1)" class="px-4 py-3 text-lg font-bold text-slate-300 hover:bg-[#383e4a]">-</button>
+                            <input type="number" id="item-qty" min="0" value="1" required class="w-full bg-transparent text-center text-white font-bold text-lg focus:outline-none">
+                            <button type="button" onclick="adjustModalQty(1)" class="px-4 py-3 text-lg font-bold text-[#00c4d8] hover:bg-[#383e4a]">+</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Scorta Minima</label>
+                        <input type="number" id="item-min" min="0" value="2" required class="w-full bg-[#1e2229] text-white rounded-xl px-3.5 py-3 border border-[#383e4a] focus:border-[#00c4d8] focus:outline-none text-sm font-bold text-center">
+                    </div>
+                </div>
+
+                <div class="pt-3 space-y-2.5">
+                    <div class="flex items-center gap-3">
+                        <button type="button" id="delete-item-btn" onclick="deleteCurrentItem()" class="hidden p-3.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 border border-rose-500/30 font-semibold transition" title="Elimina">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                        <button type="submit" class="flex-1 py-3.5 px-6 rounded-xl bg-[#00c4d8] hover:bg-[#22d6e8] text-slate-950 font-extrabold text-base shadow-[0_0_15px_rgba(0,196,216,0.2)] transition">
+                            Salva Articolo
+                        </button>
+                    </div>
+                    <button type="button" id="duplicate-brand-btn" onclick="duplicateForAnotherBrand()" class="hidden w-full py-2.5 px-4 rounded-xl bg-[#1e2229] hover:bg-[#383e4a] text-[#00c4d8] border border-[#383e4a] font-bold text-xs flex items-center justify-center gap-2 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        <span>Duplica su un'altra Marca / Serie</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODALE ZOOM FOTO -->
+    <div id="photo-zoom-modal" class="hidden fixed inset-0 z-50 bg-[#1e2229]/95 backdrop-blur-md flex items-center justify-center p-4" onclick="closePhotoZoom()">
+        <div class="relative max-w-md w-full max-h-[85vh] flex flex-col items-center">
+            <button onclick="closePhotoZoom()" class="absolute -top-12 right-0 p-2 text-slate-400 hover:text-white bg-[#1e2229] rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <img id="zoomed-photo-img" src="" alt="Foto articolo" class="max-w-full max-h-[75vh] rounded-2xl object-contain border border-[#00c4d8]/30 shadow-2xl">
+            <p id="zoomed-photo-title" class="text-white font-bold text-sm mt-3 text-center"></p>
+        </div>
+    </div>
+
+    <!-- MODALE CATEGORIE -->
+    <div id="category-manager-modal" class="hidden fixed inset-0 z-50 bg-[#1e2229]/90 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-[#2b3038] border border-[#00c4d8]/30 w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl animate-slide-up max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-[#383e4a]">
+                <h2 class="text-lg font-bold text-white">Gestisci Categorie</h2>
+                <button type="button" onclick="closeCategoryManagerModal()" class="p-2 rounded-xl bg-[#1e2229] text-slate-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+            <form onsubmit="addNewCategory(event)" class="flex gap-2 mb-4">
+                <input type="text" id="new-category-name" placeholder="Nome nuova categoria..." required class="flex-1 bg-[#1e2229] text-white rounded-xl px-4 py-3 border border-[#383e4a] focus:border-[#00c4d8] focus:outline-none text-sm">
+                <button type="submit" class="px-5 py-3 rounded-xl bg-[#00c4d8] hover:bg-[#22d6e8] text-slate-950 font-extrabold text-sm transition">Aggiungi</button>
+            </form>
+            <div class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Categorie Esistenti</div>
+            <div id="category-list-container" class="flex-1 overflow-y-auto space-y-2 pr-1 mb-2"></div>
+        </div>
+    </div>
+
+    <!-- MODALE SCANNER -->
+    <div id="scanner-modal" class="hidden fixed inset-0 z-50 bg-[#1e2229]/95 backdrop-blur-md flex flex-col justify-between p-4">
+        <div class="flex items-center justify-between pb-3 border-b border-[#383e4a]">
+            <h2 class="text-base font-bold text-white">Scanner Codice / Articolo</h2>
+            <button type="button" onclick="closeScannerModal()" class="p-2 rounded-xl bg-[#2b3038] text-slate-400 hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+        <div class="flex-1 flex flex-col items-center justify-center space-y-4 max-w-sm mx-auto w-full text-center">
+            <div class="w-full bg-[#2b3038] border-2 border-dashed border-[#00c4d8]/50 rounded-2xl p-6 relative overflow-hidden flex flex-col items-center justify-center min-h-[200px]">
+                <div class="absolute inset-0 bg-[#00c4d8]/5 flex items-center justify-center">
+                    <div class="w-3/4 h-0.5 bg-[#00c4d8] animate-pulse shadow-[0_0_15px_#00c4d8]"></div>
+                </div>
+                <p class="text-sm font-bold text-white mb-1">Inquadra o inserisci codice</p>
+                <p class="text-xs text-slate-400">Se il codice esiste incrementa la scorta, altrimenti crea l'articolo.</p>
+            </div>
+            <div class="w-full space-y-2">
+                <input type="text" id="scanner-code-input" placeholder="Codice articolo..." onkeydown="if(event.key==='Enter') processScannedCode(this.value)" class="w-full bg-[#1e2229] text-white text-center rounded-xl px-4 py-3.5 border border-[#383e4a] focus:border-[#00c4d8] focus:outline-none font-mono text-base">
+                <button type="button" onclick="processScannedCode(document.getElementById('scanner-code-input').value)" class="w-full py-3.5 px-4 rounded-xl bg-[#00c4d8] hover:bg-[#22d6e8] text-slate-950 font-extrabold text-sm transition">Cerca o Aggiungi</button>
+            </div>
+        </div>
+        <div class="pt-3 text-center text-xs text-slate-500">Compatibile con pistole barcode USB/Bluetooth.</div>
+    </div>
+
+    <!-- MODALE SPESA -->
+    <div id="shopping-modal" class="hidden fixed inset-0 z-50 bg-[#1e2229]/90 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-[#2b3038] border border-[#00c4d8]/30 w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl animate-slide-up max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-[#383e4a]">
+                <div class="flex items-center gap-2">
+                    <h2 class="text-lg font-bold text-white">Lista da Riordinare</h2>
+                    <span id="shopping-count-pill" class="px-2 py-0.5 rounded-full bg-rose-500 text-white text-xs font-bold">0</span>
+                </div>
+                <button type="button" onclick="closeShoppingModal()" class="p-2 rounded-xl bg-[#1e2229] text-slate-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+            <div id="shopping-list-content" class="flex-1 overflow-y-auto space-y-2.5 pr-1 mb-4"></div>
+            <button onclick="copyShoppingList()" class="w-full py-4 px-6 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-lg flex items-center justify-center gap-2 transition">
+                <span>Copia Lista per WhatsApp</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- MODALE BACKUP -->
+    <div id="backup-modal" class="hidden fixed inset-0 z-50 bg-[#1e2229]/90 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-[#2b3038] border border-[#00c4d8]/30 w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl animate-slide-up max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-[#383e4a]">
+                <h2 class="text-lg font-bold text-white">Backup e Gestione</h2>
+                <button type="button" onclick="closeBackupModal()" class="p-2 rounded-xl bg-[#1e2229] text-slate-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="exportJSON()" class="p-3.5 rounded-2xl bg-[#1e2229] hover:bg-[#383e4a] border border-[#383e4a] flex flex-col items-center justify-center gap-2 text-[#00c4d8] transition">
+                        <span class="text-xs font-bold text-white">Salva Backup JSON</span>
+                    </button>
+                    <button onclick="exportCSV()" class="p-3.5 rounded-2xl bg-[#1e2229] hover:bg-[#383e4a] border border-[#383e4a] flex flex-col items-center justify-center gap-2 text-[#00c4d8] transition">
+                        <span class="text-xs font-bold text-white">Scarica Excel (CSV)</span>
+                    </button>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Ripristina da Backup</label>
+                    <label class="w-full py-3 px-4 rounded-xl bg-[#1e2229] hover:bg-[#383e4a] text-slate-200 border border-[#383e4a] font-semibold text-xs flex items-center justify-center gap-2 cursor-pointer transition">
+                        <span>Seleziona file JSON di backup</span>
+                        <input type="file" accept=".json" onchange="importJSON(event)" class="hidden">
+                    </label>
+                </div>
+                <div class="pt-4 border-t border-[#383e4a]">
+                    <button id="reset-btn" onclick="handleResetConfirm()" data-confirming="false" class="w-full py-3 px-4 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold text-xs transition">Ripristina inventario iniziale predefinito</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const STORAGE_KEY = 'hs_electricals_magazzino_v7';
+
+        const DEFAULT_CATEGORIES = ["Cavi", "Frutti e Comandi", "Prese", "Supporti e Placche", "Accessori", "Magnetotermici e Differenziali", "Altro"];
+        const DEFAULT_BRANDS = ["Da assegnare", "Prysmian", "La Triveneta Cavi", "General Cavi", "BTicino Matix", "BTicino MatixGO", "Vimar Plana", "Gewiss", "ABB", "Schneider"];
+
+        const INITIAL_INVENTORY = [
+            { id: 'item-c1', name: 'Cavo FG17 4G2.5', brand: 'Prysmian', category: 'Cavi', qty: 100, minQty: 25, code: 'FG17-2.5', note: 'Matassa 100m • Sezione: 2.5 mm² • Colore: Nero/Marrone/Blu/G/V', photo: '' },
+            { id: 'item-c2', name: 'Cavo N07V-K 1.5', brand: 'La Triveneta Cavi', category: 'Cavi', qty: 100, minQty: 25, code: 'N07V-1.5', note: 'Matassa 100m • Sezione: 1.5 mm² • Colore: Blu (Neutro)', photo: '' },
+            { id: 'item-1', name: 'Interruttore', brand: 'BTicino MatixGO', category: 'Frutti e Comandi', qty: 9, minQty: 2, code: '14001', note: '', photo: '' },
+            { id: 'item-2', name: 'Deviatore', brand: 'BTicino MatixGO', category: 'Frutti e Comandi', qty: 4, minQty: 2, code: '14002', note: '', photo: '' }
+        ];
+
+        let state = { items: [], categories: [...DEFAULT_CATEGORIES], brands: [...DEFAULT_BRANDS], selectedCategory: 'Tutti', selectedBrand: 'Tutte le marche', searchQuery: '', onlyLowStock: false };
+        let resetConfirmTimeout = null, toastTimeout = null, categoryHoldTimer = null;
+
+        document.addEventListener('DOMContentLoaded', () => { loadFromStorage(); renderAll(); });
+
+        function loadFromStorage() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed.items)) state.items = parsed.items;
+                    if (Array.isArray(parsed.categories)) state.categories = parsed.categories;
+                    if (Array.isArray(parsed.brands)) state.brands = parsed.brands;
+                } else {
+                    state.items = JSON.parse(JSON.stringify(INITIAL_INVENTORY));
+                    saveToStorage();
+                }
+            } catch (err) { state.items = JSON.parse(JSON.stringify(INITIAL_INVENTORY)); }
+        }
+
+        function saveToStorage() {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ items: state.items, categories: state.categories, brands: state.brands })); } catch (e) {}
+        }
+
+        function renderAll() { renderCategoryPills(); renderBrandPills(); renderInventory(); updateHeaderStats(); }
+
+        function updateHeaderStats() {
+            const totalPieces = state.items.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+            const totalArticles = state.items.length;
+            const lowStockItems = state.items.filter(item => item.qty <= (item.minQty ?? 2));
+            document.getElementById('stats-subtitle').textContent = `${totalArticles} articoli • ${totalPieces} pz`;
+            const badge = document.getElementById('low-stock-badge');
+            if (lowStockItems.length > 0) { badge.textContent = lowStockItems.length; badge.classList.remove('hidden'); }
+            else { badge.classList.add('hidden'); }
+        }
+
+        function renderCategoryPills() {
+            const container = document.getElementById('category-filters');
+            const allCats = ['Tutti', ...state.categories];
+            container.innerHTML = allCats.map(cat => {
+                const isSelected = state.selectedCategory === cat;
+                const active = isSelected ? "bg-[#00c4d8] text-slate-950 shadow-md shadow-[#00c4d8]/20 font-extrabold" : "bg-[#1e2229] text-slate-300 hover:bg-[#383e4a] border border-[#383e4a]";
+                const hold = cat !== 'Tutti' ? `onmousedown="startCategoryHold(event, '${escapeHtml(cat)}')" ontouchstart="startCategoryHold(event, '${escapeHtml(cat)}')" onmouseup="cancelCategoryHold()" ontouchend="cancelCategoryHold()"` : '';
+                return `<div onclick="selectCategory('${escapeHtml(cat)}')" ${hold} class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition cursor-pointer select-none flex items-center gap-1.5 ${active}"><span>${escapeHtml(cat)}</span></div>`;
+            }).join('') + `<button onclick="openCategoryManagerModal()" class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#1e2229] hover:bg-[#383e4a] text-[#00c4d8] border border-dashed border-[#00c4d8]/40 transition"><span>+ Altra Categoria</span></button>`;
+        }
+
+        function startCategoryHold(e, catName) {
+            categoryHoldTimer = setTimeout(() => { if (navigator.vibrate) navigator.vibrate(40); openCategoryReorderPrompt(catName); }, 600);
+        }
+        function cancelCategoryHold() { if (categoryHoldTimer) { clearTimeout(categoryHoldTimer); categoryHoldTimer = null; } }
+
+        function openCategoryReorderPrompt(catName) {
+            const idx = state.categories.indexOf(catName);
+            if (idx === -1) return;
+            const modal = document.createElement('div');
+            modal.id = 'category-reorder-popup';
+            modal.className = 'fixed inset-0 z-50 bg-[#1e2229]/90 backdrop-blur-sm flex items-center justify-center p-4 animate-slide-up';
+            modal.innerHTML = `
+                <div class="bg-[#2b3038] border border-[#00c4d8]/30 w-full max-w-xs rounded-3xl p-5 shadow-2xl text-center space-y-4">
+                    <h3 class="text-base font-bold text-white mb-1">Sposta "${escapeHtml(catName)}"</h3>
+                    <div class="grid grid-cols-2 gap-2.5 pt-2">
+                        <button onclick="reorderCategoryPopup('${escapeHtml(catName)}', -1)" class="py-3 px-4 rounded-xl bg-[#1e2229] text-[#00c4d8] font-bold text-xs border border-[#383e4a]">◀ Sinistra</button>
+                        <button onclick="reorderCategoryPopup('${escapeHtml(catName)}', 1)" class="py-3 px-4 rounded-xl bg-[#1e2229] text-[#00c4d8] font-bold text-xs border border-[#383e4a]">Destra ▶</button>
+                    </div>
+                    <button onclick="closeCategoryReorderPopup()" class="w-full py-2 text-slate-400 text-xs">Annulla</button>
+                </div>`;
+            document.body.appendChild(modal);
+        }
+        function closeCategoryReorderPopup() { const p = document.getElementById('category-reorder-popup'); if (p) p.remove(); }
+        function reorderCategoryPopup(catName, direction) {
+            const idx = state.categories.indexOf(catName), ni = idx + direction;
+            if (ni < 0 || ni >= state.categories.length) { closeCategoryReorderPopup(); return; }
+            const temp = state.categories[idx]; state.categories[idx] = state.categories[ni]; state.categories[ni] = temp;
+            saveToStorage(); renderCategoryPills(); closeCategoryReorderPopup(); showToast(`Spostato "${catName}"`);
+        }
+
+        function renderBrandPills() {
+            const container = document.getElementById('brand-filters');
+            const used = new Set(); state.items.forEach(i => { if (i.brand) used.add(i.brand); });
+            const sorted = Array.from(used).sort((a, b) => a === 'Da assegnare' ? 1 : b === 'Da assegnare' ? -1 : a.localeCompare(b));
+            if (state.selectedBrand !== 'Tutte le marche' && !used.has(state.selectedBrand)) state.selectedBrand = 'Tutte le marche';
+            container.innerHTML = ['Tutte le marche', ...sorted].map(b => {
+                const sel = state.selectedBrand === b;
+                const cls = sel ? "bg-[#00c4d8] text-slate-950 shadow-md shadow-[#00c4d8]/20 font-extrabold" : "bg-[#1e2229] text-slate-400 hover:text-slate-200 border border-[#383e4a]";
+                return `<button onclick="selectBrand('${escapeHtml(b)}')" class="shrink-0 px-3 py-1 rounded-lg text-[11px] font-bold transition cursor-pointer select-none ${cls}">${escapeHtml(b === 'Tutte le marche' ? '🏷️ Tutte le marche' : b)}</button>`;
+            }).join('');
+        }
+
+        function renderInventory() {
+            const listEl = document.getElementById('inventory-list');
+            const q = state.searchQuery.trim().toLowerCase();
+            const filtered = state.items.filter(item => {
+                const ib = item.brand || 'Da assegnare';
+                const mc = state.selectedCategory === 'Tutti' || item.category === state.selectedCategory;
+                const mb = state.selectedBrand === 'Tutte le marche' || ib === state.selectedBrand;
+                const ml = !state.onlyLowStock || item.qty <= (item.minQty ?? 2);
+                const ms = !q || item.name.toLowerCase().includes(q) || ib.toLowerCase().includes(q) || (item.code && item.code.toLowerCase().includes(q)) || (item.note && item.note.toLowerCase().includes(q));
+                return mc && mb && ml && ms;
+            });
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = `<div class="text-center py-12 px-4 bg-[#1e2229]/60 rounded-2xl border border-[#383e4a] border-dashed"><p class="text-slate-300 font-bold text-base mb-1">Nessun articolo trovato</p><button onclick="resetFilters()" class="mt-2 px-4 py-2 rounded-xl bg-[#1e2229] text-[#00c4d8] text-xs font-bold border border-[#383e4a]">Mostra tutto</button></div>`;
+                return;
+            }
+
+            listEl.innerHTML = filtered.map(item => {
+                const min = item.minQty ?? 2, out = item.qty === 0, low = item.qty > 0 && item.qty <= min;
+                const ib = item.brand || 'Da assegnare', isC = item.category === 'Cavi';
+                let border = "border-[#383e4a] bg-[#1e2229]/90", qtyColor = "text-white", badge = "";
+                if (out) { border = "border-rose-500/50 bg-rose-950/20"; qtyColor = "text-rose-400"; badge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-rose-500/20 text-rose-400">Esaurito</span>`; }
+                else if (low) { border = "border-amber-500/40 bg-[#1e2229]/90"; qtyColor = "text-amber-400"; badge = `<span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-amber-500/20 text-amber-300">Scorta bassa</span>`; }
+
+                const photo = item.photo ? `<div onclick="event.stopPropagation(); openPhotoZoom('${item.photo}', '${escapeHtml(item.name).replace(/'/g, "\\'")}')" class="w-12 h-12 rounded-xl bg-[#1e2229] border border-[#383e4a] overflow-hidden shrink-0 cursor-pointer shadow hover:opacity-80"><img src="${item.photo}" class="w-full h-full object-cover"></div>` : '';
+
+                return `
+                    <div class="rounded-2xl p-3.5 border ${border} shadow-sm flex items-center justify-between gap-3 transition">
+                        ${photo}
+                        <div onclick="openItemModal('${item.id}')" class="flex-1 min-w-0 cursor-pointer py-0.5">
+                            <div class="flex items-center flex-wrap gap-1.5 mb-1.5">
+                                <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-[#2b3038] text-slate-300">${escapeHtml(ib)}</span>
+                                <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-[#2b3038] text-slate-300">${escapeHtml(item.category)}</span>
+                                ${isC ? `<span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-[#00c4d8]/15 text-[#00c4d8]">🌀 Matassa</span>` : ''}
+                                ${item.code ? `<span class="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-[#00c4d8]/15 text-[#00c4d8]">Cod. ${escapeHtml(item.code)}</span>` : ''}
+                                ${badge}
+                            </div>
+                            <h3 class="text-base font-bold text-slate-100 truncate">${escapeHtml(item.name)}</h3>
+                            <p class="text-xs text-slate-400 truncate mt-0.5">${escapeHtml(item.note || 'Tocca per dettagli')}</p>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0 bg-[#2b3038] p-1.5 rounded-2xl border border-[#383e4a]">
+                            <button onclick="updateQuantity('${item.id}', ${isC ? -10 : -1})" class="w-11 h-11 rounded-xl bg-[#1e2229] hover:bg-[#383e4a] text-slate-200 font-extrabold text-sm flex items-center justify-center">${isC ? '-10' : '−'}</button>
+                            <div onclick="openItemModal('${item.id}')" class="w-14 text-center cursor-pointer"><span class="text-base font-extrabold ${qtyColor} tabular-nums">${item.qty}</span><span class="block text-[9px] text-slate-400 uppercase font-bold">${isC ? 'metri' : 'pezzi'}</span></div>
+                            <button onclick="updateQuantity('${item.id}', ${isC ? 10 : 1})" class="w-11 h-11 rounded-xl bg-[#00c4d8]/20 hover:bg-[#00c4d8]/30 text-[#00c4d8] font-extrabold text-sm flex items-center justify-center">${isC ? '+10' : '+'}</button>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function openPhotoZoom(url, title) {
+            document.getElementById('zoomed-photo-img').src = url;
+            document.getElementById('zoomed-photo-title').textContent = title;
+            document.getElementById('photo-zoom-modal').classList.remove('hidden');
+        }
+        function closePhotoZoom() { document.getElementById('photo-zoom-modal').classList.add('hidden'); }
+
+        function handlePhotoUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => setPhotoData(ev.target.result);
+            reader.readAsDataURL(file);
+        }
+
+        function setPhotoData(base64) {
+            document.getElementById('item-photo-base64').value = base64;
+            document.getElementById('item-photo-preview').innerHTML = `<img src="${base64}" class="w-full h-full object-cover">`;
+            document.getElementById('remove-photo-btn').classList.remove('hidden');
+        }
+
+        function removePhoto() {
+            document.getElementById('item-photo-base64').value = '';
+            document.getElementById('item-photo-preview').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`;
+            document.getElementById('item-photo-file').value = '';
+            document.getElementById('remove-photo-btn').classList.add('hidden');
+        }
+
+        function updateQuantity(id, delta) {
+            const item = state.items.find(i => i.id === id);
+            if (!item) return;
+            item.qty = Math.max(0, Number(item.qty) + delta);
+            saveToStorage(); renderInventory(); updateHeaderStats();
+            showToast(`${delta > 0 ? '+' : ''}${delta} ${item.name} (${item.qty})`);
+        }
+
+        function handleSearch(val) { state.searchQuery = val; document.getElementById('clear-search-btn').classList.toggle('hidden', !val); renderInventory(); }
+        function clearSearch() { const i = document.getElementById('search-input'); i.value = ''; handleSearch(''); i.focus(); }
+        function selectCategory(cat) { state.selectedCategory = cat; renderCategoryPills(); renderInventory(); }
+        function selectBrand(b) { state.selectedBrand = b; renderBrandPills(); renderInventory(); }
+        function toggleLowStockFilter() { state.onlyLowStock = !state.onlyLowStock; renderInventory(); }
+        function resetFilters() { state.selectedCategory = 'Tutti'; state.selectedBrand = 'Tutte le marche'; state.searchQuery = ''; state.onlyLowStock = false; document.getElementById('search-input').value = ''; renderAll(); }
+
+        function openCategoryManagerModal() { renderCategoryManagerList(); document.getElementById('category-manager-modal').classList.remove('hidden'); }
+        function closeCategoryManagerModal() { document.getElementById('category-manager-modal').classList.add('hidden'); }
+        function renderCategoryManagerList() {
+            document.getElementById('category-list-container').innerHTML = state.categories.map((cat, idx) => `
+                <div class="flex items-center justify-between p-3 rounded-xl bg-[#1e2229] border border-[#383e4a]">
+                    <p class="text-sm font-bold text-white truncate">${escapeHtml(cat)}</p>
+                    <div class="flex items-center gap-1">
+                        <button onclick="moveCategory(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} class="p-2 rounded bg-[#383e4a] text-slate-200 disabled:opacity-30">◀</button>
+                        <button onclick="moveCategory(${idx}, 1)" ${idx === state.categories.length - 1 ? 'disabled' : ''} class="p-2 rounded bg-[#383e4a] text-slate-200 disabled:opacity-30">▶</button>
+                        <button onclick="deleteCategory('${escapeHtml(cat)}')" class="p-2 rounded bg-rose-500/20 text-rose-400 ml-1">✕</button>
+                    </div>
+                </div>`).join('');
+        }
+        function moveCategory(i, d) {
+            const ni = i + d; if (ni < 0 || ni >= state.categories.length) return;
+            const t = state.categories[i]; state.categories[i] = state.categories[ni]; state.categories[ni] = t;
+            saveToStorage(); renderCategoryManagerList(); renderCategoryPills(); renderInventory();
+        }
+        function addNewCategory(e) {
+            e.preventDefault();
+            const val = document.getElementById('new-category-name').value.trim();
+            if (!val || state.categories.includes(val)) return;
+            state.categories.push(val); saveToStorage(); document.getElementById('new-category-name').value = '';
+            renderCategoryManagerList(); renderCategoryPills(); showToast("Categoria aggiunta");
+        }
+        function deleteCategory(cat) {
+            if (state.items.some(i => i.category === cat)) { showToast("Impossibile eliminare: ci sono articoli"); return; }
+            state.categories = state.categories.filter(c => c !== cat);
+            if (state.selectedCategory === cat) state.selectedCategory = 'Tutti';
+            saveToStorage(); renderCategoryManagerList(); renderCategoryPills(); renderInventory(); showToast("Eliminata");
+        }
+
+        function openScannerModal() { document.getElementById('scanner-code-input').value = ''; document.getElementById('scanner-modal').classList.remove('hidden'); setTimeout(() => document.getElementById('scanner-code-input').focus(), 150); }
+        function closeScannerModal() { document.getElementById('scanner-modal').classList.add('hidden'); }
+        function processScannedCode(code) {
+            const clean = code.trim(); if (!clean) return;
+            closeScannerModal();
+            const existing = state.items.find(i => i.code && i.code.toLowerCase() === clean.toLowerCase());
+            if (existing) { existing.qty++; saveToStorage(); renderInventory(); updateHeaderStats(); showToast(`+1 ${existing.name}`); }
+            else { openItemModal(); document.getElementById('item-code').value = clean; document.getElementById('item-name').focus(); showToast(`Nuovo codice ${clean}`); }
+        }
+
+        function openItemModal(id = null) {
+            const modal = document.getElementById('item-modal'), catSelect = document.getElementById('item-category'), brandSelect = document.getElementById('item-brand-select');
+            catSelect.innerHTML = state.categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('') + `<option value="__NEW__">+ Nuova categoria...</option>`;
+            brandSelect.innerHTML = state.brands.map(b => `<option value="${escapeHtml(b)}">${escapeHtml(b)}</option>`).join('') + `<option value="__CUSTOM__">+ Altra marca...</option>`;
+            
+            document.getElementById('item-new-category').classList.add('hidden');
+            document.getElementById('item-brand-custom').classList.add('hidden');
+
+            catSelect.onchange = function() {
+                document.getElementById('item-new-category').classList.toggle('hidden', this.value !== '__NEW__');
+                document.getElementById('cable-specific-fields').classList.toggle('hidden', this.value !== 'Cavi');
+            };
+
+            if (id) {
+                const item = state.items.find(i => i.id === id);
+                if (!item) return;
+                document.getElementById('modal-title').textContent = 'Modifica Articolo';
+                document.getElementById('item-id').value = item.id;
+                document.getElementById('item-name').value = item.name;
+                document.getElementById('item-code').value = item.code || '';
+                brandSelect.value = state.brands.includes(item.brand) ? item.brand : 'Da assegnare';
+                document.getElementById('item-note').value = item.note || '';
+                catSelect.value = state.categories.includes(item.category) ? item.category : '__NEW__';
+                if (catSelect.value === '__NEW__') { document.getElementById('item-new-category').classList.remove('hidden'); document.getElementById('item-new-category').value = item.category; }
+                document.getElementById('item-qty').value = item.qty;
+                document.getElementById('item-min').value = item.minQty ?? 2;
+                document.getElementById('delete-item-btn').classList.remove('hidden');
+                document.getElementById('duplicate-brand-btn').classList.remove('hidden');
+                if (item.photo) setPhotoData(item.photo); else removePhoto();
+                document.getElementById('cable-specific-fields').classList.toggle('hidden', item.category !== 'Cavi');
+            } else {
+                document.getElementById('modal-title').textContent = 'Nuovo Articolo';
+                document.getElementById('item-id').value = '';
+                document.getElementById('item-name').value = '';
+                document.getElementById('item-code').value = '';
+                brandSelect.value = state.selectedBrand !== 'Tutte le marche' ? state.selectedBrand : 'Da assegnare';
+                document.getElementById('item-note').value = '';
+                catSelect.value = state.selectedCategory !== 'Tutti' ? state.selectedCategory : state.categories[0];
+                document.getElementById('item-qty').value = 1;
+                document.getElementById('item-min').value = 2;
+                document.getElementById('delete-item-btn').classList.add('hidden');
+                document.getElementById('duplicate-brand-btn').classList.add('hidden');
+                removePhoto();
+                document.getElementById('cable-specific-fields').classList.toggle('hidden', catSelect.value !== 'Cavi');
+            }
+            modal.classList.remove('hidden');
+        }
+
+        function closeItemModal() { document.getElementById('item-modal').classList.add('hidden'); }
+        function handleBrandSelectChange(val) { document.getElementById('item-brand-custom').classList.toggle('hidden', val !== '__CUSTOM__'); }
+        function adjustModalQty(d) { const i = document.getElementById('item-qty'); i.value = Math.max(0, parseInt(i.value || '0', 10) + d); }
+
+        function saveItem(e) {
+            e.preventDefault();
+            const id = document.getElementById('item-id').value;
+            const name = document.getElementById('item-name').value.trim();
+            const code = document.getElementById('item-code').value.trim();
+            let note = document.getElementById('item-note').value.trim();
+            const qty = Math.max(0, parseInt(document.getElementById('item-qty').value || '0', 10));
+            const minQty = Math.max(0, parseInt(document.getElementById('item-min').value || '2', 10));
+            const photo = document.getElementById('item-photo-base64').value;
+
+            let brand = document.getElementById('item-brand-select').value;
+            if (brand === '__CUSTOM__') { brand = document.getElementById('item-brand-custom').value.trim() || 'Da assegnare'; if (!state.brands.includes(brand)) state.brands.push(brand); }
+
+            let category = document.getElementById('item-category').value;
+            if (category === '__NEW__') { category = document.getElementById('item-new-category').value.trim() || 'Altro'; if (!state.categories.includes(category)) state.categories.push(category); }
+
+            if (category === 'Cavi') {
+                const sec = document.getElementById('cable-section').value, col = document.getElementById('cable-color').value;
+                const cd = `Sezione: ${sec} • Colore: ${col}`;
+                note = note ? `${cd} • ${note}` : cd;
+            }
+
+            if (!name) return;
+
+            if (id) {
+                const idx = state.items.findIndex(i => i.id === id);
+                if (idx !== -1) state.items[idx] = { ...state.items[idx], name, brand, code, note, category, qty, minQty, photo };
+                showToast("Aggiornato");
+            } else {
+                state.items.unshift({ id: 'item-' + Date.now(), name, brand, code, note, category, qty, minQty, photo });
+                showToast("Aggiunto");
+            }
+
+            saveToStorage(); closeItemModal(); renderAll();
+        }
+
+        function deleteCurrentItem() {
+            const id = document.getElementById('item-id').value;
+            if (!id) return;
+            state.items = state.items.filter(i => i.id !== id);
+            saveToStorage(); closeItemModal(); renderAll(); showToast("Eliminato");
+        }
+
+        function duplicateForAnotherBrand() {
+            document.getElementById('modal-title').textContent = 'Duplica Variante';
+            document.getElementById('item-id').value = '';
+            document.getElementById('item-code').value = '';
+            document.getElementById('item-brand-select').value = 'Da assegnare';
+            document.getElementById('delete-item-btn').classList.add('hidden');
+            document.getElementById('duplicate-brand-btn').classList.add('hidden');
+            showToast("Scegli marca e salva");
+        }
+
+        function openShoppingModal() {
+            const toOrder = state.items.filter(i => i.qty <= (i.minQty ?? 2));
+            document.getElementById('shopping-count-pill').textContent = toOrder.length;
+            document.getElementById('shopping-list-content').innerHTML = toOrder.length === 0 ? '<div class="text-center py-8 text-emerald-400 font-bold text-sm">Tutte le scorte sono OK!</div>' : toOrder.map(i => `<div class="flex items-center justify-between p-3 rounded-xl bg-[#1e2229] border border-[#383e4a]"><p class="text-sm font-bold text-white truncate">${escapeHtml(i.name)}</p><span class="px-2.5 py-1 rounded-lg text-xs font-extrabold bg-[#00c4d8]/20 text-[#00c4d8]">Rimasti: ${i.qty}</span></div>`).join('');
+            document.getElementById('shopping-modal').classList.remove('hidden');
+        }
+        function closeShoppingModal() { document.getElementById('shopping-modal').classList.add('hidden'); }
+
+        function copyShoppingList() {
+            const toOrder = state.items.filter(i => i.qty <= (i.minQty ?? 2));
+            if (toOrder.length === 0) { showToast("Nulla da ordinare"); return; }
+            const lines = ["⚡ *HS ELECTRICALS - LISTA MATERIALE*", ""];
+            toOrder.forEach(i => lines.push(`• ${i.name} [${i.brand || ''}] (Scorte: ${i.qty})`));
+            const h = document.getElementById('clipboard-helper'); h.value = lines.join('\n'); h.select();
+            try { document.execCommand('copy'); showToast("Copiata per WhatsApp!"); } catch (e) { showToast("Copia non riuscita"); }
+        }
+
+        function openBackupModal() { document.getElementById('backup-modal').classList.remove('hidden'); }
+        function closeBackupModal() { document.getElementById('backup-modal').classList.add('hidden'); }
+        function exportJSON() { downloadFile(JSON.stringify({ categories: state.categories, brands: state.brands, items: state.items }, null, 2), `hs-electricals-${getDateSlug()}.json`, 'application/json'); showToast("Scaricato JSON"); }
+        function exportCSV() {
+            const rows = state.items.map(i => [`"${i.name || ''}"`, `"${i.brand || ''}"`, `"${i.code || ''}"`, `"${i.category || ''}"`, i.qty, i.minQty ?? 2].join(';'));
+            downloadFile('\uFEFF' + ['Nome;Marca;Codice;Categoria;Quantita;ScortaMin', ...rows].join('\n'), `hs-electricals-${getDateSlug()}.csv`, 'text/csv');
+            showToast("Scaricato CSV");
+        }
+        function importJSON(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const r = new FileReader();
+            r.onload = ev => {
+                try {
+                    const p = JSON.parse(ev.target.result);
+                    if (Array.isArray(p.items)) { state.items = p.items; if (p.categories) state.categories = p.categories; if (p.brands) state.brands = p.brands; saveToStorage(); renderAll(); closeBackupModal(); showToast("Ripristinato"); }
+                } catch (err) { showToast("File non valido"); }
+            };
+            r.readAsText(file); e.target.value = '';
+        }
+        function handleResetConfirm() {
+            const btn = document.getElementById('reset-btn');
+            if (btn.dataset.confirming === 'true') {
+                state.items = JSON.parse(JSON.stringify(INITIAL_INVENTORY)); state.categories = [...DEFAULT_CATEGORIES]; state.brands = [...DEFAULT_BRANDS];
+                saveToStorage(); renderAll(); closeBackupModal(); showToast("Ripristinato predefinito");
+                btn.dataset.confirming = 'false'; btn.textContent = 'Ripristina inventario iniziale predefinito';
+            } else {
+                btn.dataset.confirming = 'true'; btn.textContent = 'Tocca di nuovo per confermare'; btn.classList.add('bg-rose-600', 'text-white');
+                clearTimeout(resetConfirmTimeout);
+                resetConfirmTimeout = setTimeout(() => { btn.dataset.confirming = 'false'; btn.textContent = 'Ripristina inventario iniziale predefinito'; btn.classList.remove('bg-rose-600', 'text-white'); }, 4000);
+            }
+        }
+        function downloadFile(content, name, mime) {
+            const blob = new Blob([content], { type: mime }), url = URL.createObjectURL(blob), a = document.createElement('a');
+            a.href = url; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        }
+        function getDateSlug() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+        function showToast(msg) {
+            const t = document.getElementById('toast'); document.getElementById('toast-msg').textContent = msg;
+            t.classList.remove('opacity-0', '-translate-y-2'); t.classList.add('opacity-100', 'translate-y-0');
+            clearTimeout(toastTimeout); toastTimeout = setTimeout(() => { t.classList.add('opacity-0', '-translate-y-2'); t.classList.remove('opacity-100', 'translate-y-0'); }, 2200);
+        }
+        function escapeHtml(str) { return !str ? '' : String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
+    </script>
+</body>
+</html>
