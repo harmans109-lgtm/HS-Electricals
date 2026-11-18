@@ -1,12 +1,26 @@
 {
-  "background_color": "#ffffff",
-  "dir": "ltr",
-  "display": "standalone",
   "name": "HS Electricals",
-  "orientation": "any",
-  "scope": "/",
   "short_name": "HS Electricals",
-  "start_url": "/",
-  "theme_color": "#ffffff",
-  "description": "Magazzino Elettrico HS Electricals"
+  "description": "Magazzino Elettrico HS Electricals",
+  "start_url": "/HS-Electricals/",
+  "scope": "/HS-Electricals/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1e2229",
+  "theme_color": "#1e2229",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "https://placehold.co/192x192/1e2229/00c4d8.png?text=HS",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://placehold.co/512x512/1e2229/00c4d8.png?text=HS",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
