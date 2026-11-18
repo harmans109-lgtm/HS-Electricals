@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HS Electricals - Magazzino Garage</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e2229">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231e2229'/%3E%3Cpath d='M35 18 C35 35 32 65 34 82 M65 22 C65 40 60 68 62 80 M24 50 Q50 48 76 50 M58 68 C62 76 68 84 72 78' stroke='%2300c4d8' stroke-width='7' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
     <!-- Caricamento Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Libreria Scanner Codice a Barre / QR Reale tramite Fotocamera -->
@@ -482,8 +485,25 @@
             const cats = ['Tutti', ...state.categories];
             container.innerHTML = cats.map(c => {
                 const active = state.selectedCategory === c;
-                return `<button type="button" onclick="selectCategory('${escapeHtml(c).replace(/'/g, "\\'")}')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${active ? 'bg-[#00c4d8] text-slate-950 shadow' : 'bg-[#1e2229] text-slate-300 border border-[#383e4a] hover:border-slate-500'}">${escapeHtml(c)}</button>`;
+                const holdAttrs = c !== 'Tutti'
+                    ? `onmousedown="startCategoryHold()" onmouseup="cancelCategoryHold()" onmouseleave="cancelCategoryHold()" ontouchstart="startCategoryHold()" ontouchend="cancelCategoryHold()" ontouchmove="cancelCategoryHold()" oncontextmenu="event.preventDefault(); openCategoryManagerModal();"`
+                    : '';
+                return `<button type="button" ${holdAttrs} onclick="if(!window._catHoldTriggered) selectCategory('${escapeHtml(c).replace(/'/g, "\\'")}'); window._catHoldTriggered = false;" class="select-none px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${active ? 'bg-[#00c4d8] text-slate-950 shadow' : 'bg-[#1e2229] text-slate-300 border border-[#383e4a] hover:border-slate-500'}">${escapeHtml(c)}</button>`;
             }).join('') + `<button type="button" onclick="openCategoryManagerModal()" class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap bg-[#1e2229] text-[#00c4d8] border border-[#00c4d8]/30 hover:bg-[#383e4a] transition">+ Gestisci</button>`;
+        }
+
+        function startCategoryHold() {
+            window._catHoldTriggered = false;
+            clearTimeout(categoryHoldTimer);
+            categoryHoldTimer = setTimeout(() => {
+                window._catHoldTriggered = true;
+                if (navigator.vibrate) navigator.vibrate(45);
+                openCategoryManagerModal();
+            }, 500);
+        }
+
+        function cancelCategoryHold() {
+            clearTimeout(categoryHoldTimer);
         }
 
         function selectCategory(cat) {
@@ -674,12 +694,27 @@
 
         function renderCategoryManagerList() {
             const list = document.getElementById('category-manager-list');
-            list.innerHTML = state.categories.map(c => `
-                <div class="flex items-center justify-between p-3 rounded-xl bg-[#1e2229] border border-[#383e4a]">
-                    <span class="text-sm font-semibold text-white">${escapeHtml(c)}</span>
-                    <button type="button" onclick="deleteCategory('${escapeHtml(c).replace(/'/g, "\\'")}')" class="text-xs font-bold text-rose-400 hover:text-rose-300 px-2.5 py-1 rounded-lg bg-rose-500/10">Elimina</button>
+            list.innerHTML = state.categories.map((c, idx) => `
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#1e2229] border border-[#383e4a] gap-2">
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button type="button" onclick="moveCategory(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} class="w-8 h-8 rounded-lg bg-[#2b3038] text-slate-200 hover:bg-[#383e4a] disabled:opacity-30 font-bold flex items-center justify-center transition" title="Sposta su">↑</button>
+                        <button type="button" onclick="moveCategory(${idx}, 1)" ${idx === state.categories.length - 1 ? 'disabled' : ''} class="w-8 h-8 rounded-lg bg-[#2b3038] text-slate-200 hover:bg-[#383e4a] disabled:opacity-30 font-bold flex items-center justify-center transition" title="Sposta giù">↓</button>
+                    </div>
+                    <span class="flex-1 text-sm font-semibold text-white truncate px-1">${escapeHtml(c)}</span>
+                    <button type="button" onclick="deleteCategory('${escapeHtml(c).replace(/'/g, "\\'")}')" class="text-xs font-bold text-rose-400 hover:text-rose-300 px-2.5 py-1.5 rounded-lg bg-rose-500/10 shrink-0">Elimina</button>
                 </div>
             `).join('');
+        }
+
+        function moveCategory(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= state.categories.length) return;
+            const temp = state.categories[index];
+            state.categories[index] = state.categories[newIndex];
+            state.categories[newIndex] = temp;
+            saveToStorage();
+            renderCategoryManagerList();
+            renderCategoryPills();
         }
 
         function addNewCategory(e) {
