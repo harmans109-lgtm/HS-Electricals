@@ -1,0 +1,10 @@
+{
+  "name": "magazzino-elettrico",
+  "version": "1.0.0",
+  "description": "Magazzino Elettrico Garage",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'Build completata'"
+  },
+  "dependencies": {}
+}
